@@ -1,0 +1,35 @@
+User Authentication:
+
+/signup: POST - Create a new user account
+/signin: POST - Login to an existing account. [aadhar card no + Password]
+
+Voting:
+/canndidate: GET - Get the list of canndidate
+/vote/:candidate ID: POST - Vote for an specific candidate
+
+/Vote Counts: 
+/Vote/counts: GET - Get teh list of candidate sorted by thier vote counts.
+
+User/Profile:
+
+/profile: - GET - Get the user's profile information
+/profile/password: PUT - Change the user's password.
+
+Admin Candidate Management:
+
+/candidates/:POST - Create a new candidate.
+/candidate/:candidateId/: PUT - Update and existing candidate
+/candidate/:candidateId/:Delete - Delete a candidate from the list.
+
+
+
+//Creating Application Steps - 
+
+1. First create/run npm init -y
+2. npm install express mongoose dotenv cors 
+3. npm install nodemon --save-dev   
+4. creating server.js/index.js file
+5. create .env file
+6. creating models for schema - just creating folder and create files
+7. creating routes for schmas and models - just create folder first then files
+8. Authentication for login and registration - install jsonwebtoken
