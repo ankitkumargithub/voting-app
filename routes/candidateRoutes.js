@@ -1,24 +1,34 @@
 const express = require('express');
 
 const router = express.Router();
-const User = require('../models/Candidate.js');
+const Candidate = require('../models/Candidate');
+const User = require('../models/User');
+
 
 const {jwtMiddleware, generateToken} = require('../jwt.js');
 
 const checkAdminRole = async (userID) =>{
-    try{
-        await User.findById(userID).then((user) => {
-        if(user.role === 'admin'){
-            return true;
+    try {
+        console.log("Checking admin role:", userID);
+
+        const user = await User.findById(userID);
+
+        console.log(user);
+
+        if (!user) {
+            return false;
         }
-    });
-    }catch(error){
-        console.log('Error checking admin role:', error);
+
+        return user.role === "admin";
+
+    } catch (err) {
+        console.log(err);
+        return false;
     }
     
 }
 
-router.post('/', async(req, res) => {
+router.post('/', jwtMiddleware,async(req, res) => {
     try{
         if(!await checkAdminRole(req.user.id)){
             return res.status(403).json({ message: 'Forbidden: Only admin can add candidates' });
@@ -40,7 +50,7 @@ router.post('/', async(req, res) => {
 
 
 
-router.put("/:candidateId", async(req, res) => {
+router.put("/:candidateId", jwtMiddleware, async(req, res) => {
     try {
         if(!await checkAdminRole(req.user.id)){
             return res.status(403).json({ message: 'Forbidden: Only admin can update candidates' });
@@ -60,7 +70,7 @@ router.put("/:candidateId", async(req, res) => {
     }
 });
 
-router.delete("/:candidateId", async(req, res) => {
+router.delete("/:candidateId", jwtMiddleware, async(req, res) => {
     try {
         if(!await checkAdminRole(req.user.id)){
             return res.status(403).json({ message: 'Forbidden: Only admin can delete candidates' });
@@ -79,6 +89,15 @@ router.delete("/:candidateId", async(req, res) => {
     }
 });
 
+router.post("/vote/:candidateId", jwtMiddleware, async(req, res) => {
+    try {
+        //only voters can vote
+        // Check if the user has already voted
+    }
+    catch (error) {
+
+    }
+});
 
 
 

@@ -9,6 +9,14 @@ const {jwtMiddleware, generateToken} = require('./../jwt.js');
 router.post('/signup', async(req, res) => {
     try{
     const data = req.body;
+    
+    //checking if admin already exists
+    if(data.role && data.role === 'admin'){
+        const existingAdmin = await User.findOne({ role: 'admin' });
+        if(existingAdmin){
+            return res.status(400).json({ error: 'Admin user already exists' });
+        }
+    }
     const user = new User(data);
 
     const response = await user.save();

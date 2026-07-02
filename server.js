@@ -19,4 +19,4 @@ userRoutes = require('./routes/userRoutes');
 candidateRoutes = require('./routes/candidateRoutes');
 
 app.use('/api/user', userRoutes);
-app.use('/api/candidate', jwtMiddleware,candidateRoutes);
+app.use('/api/candidate',candidateRoutes);
