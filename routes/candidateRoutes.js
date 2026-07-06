@@ -93,12 +93,58 @@ router.post("/vote/:candidateId", jwtMiddleware, async(req, res) => {
     try {
         //only voters can vote
         // Check if the user has already voted
-    }
-    catch (error) {
+        userId = req.user.id;
+        candidateId = req.params.candidateId;
+        const candidate = await Candidate.findById(candidateId);
+        if (!candidate) {
+            return res.status(404).json({ error: 'Candidate not found' });
+        }
 
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        if (user.isVoted) {
+            return res.status(400).json({ error: 'User has already voted' });
+        }
+
+        if (user.role !== 'voter') {
+            return res.status(403).json({ error: 'Only voters can vote' });
+        }
+
+        // Increment the vote count for the candidate
+        candidate.votes.push({user: userId});
+        candidate.voteCount++;
+        await candidate.save();
+
+        user.isVoted = true;
+        await user.save();
+
+        res.status(200).json({ message: 'Vote recorded successfully' });
+
+    } catch (error) {
+        console.log('Error occurred while voting:', error);
+        res.status(500).json({ error: 'Error occurred while voting', details: error });
     }
 });
 
+
+router.get('/votes/count', async(req, res) => {
+    try {
+        const candidates = await Candidate.find().sort({ voteCount: 'desc'});
+
+        const voteCounts = candidates.map(candidate => ({
+            candidateParty: candidate.party ,
+            candidateName: candidate.name,
+            voteCount: candidate.voteCount
+        }));
+        res.status(200).json(voteCounts);
+    } catch (error) {
+        console.log('Error occurred while fetching vote count:', error);
+        res.status(500).json({ error: 'Error occurred while fetching vote count', details: error });
+    }
+});
 
 
 module.exports = router;
